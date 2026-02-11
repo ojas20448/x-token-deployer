@@ -1,0 +1,48 @@
+{
+  "name": "x-deploy-bot",
+  "version": "1.0.0",
+  "description": "X (Twitter) native token deployment bot - deploys tokens and Uniswap v4 pools",
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "node --import tsx --watch src/index.ts",
+    "test": "jest",
+    "lint": "eslint src/**/*.ts",
+    "db:push": "tsx scripts/push-schema.ts"
+  },
+  "dependencies": {
+    "axios": "^1.13.5",
+    "bullmq": "^5.20.0",
+    "cors": "^2.8.6",
+    "dotenv": "^16.4.5",
+    "ethers": "^6.13.0",
+    "express": "^4.21.0",
+    "four-flap-meme-sdk": "^1.8.0",
+    "ioredis": "^5.4.1",
+    "pg": "^8.13.0",
+    "siwe": "^2.3.2",
+    "twitter-api-v2": "^1.17.0",
+    "viem": "^2.21.0",
+    "zod": "^3.23.0"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.19",
+    "@types/express": "^4.17.21",
+    "@types/jest": "^29.5.0",
+    "@types/node": "^22.0.0",
+    "@types/pg": "^8.11.0",
+    "@typescript-eslint/eslint-plugin": "^8.0.0",
+    "@typescript-eslint/parser": "^8.0.0",
+    "eslint": "^9.0.0",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.2.0",
+    "ts-node-dev": "^2.0.0",
+    "tsx": "^4.21.0",
+    "typescript": "^5.6.0"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:16-alpine
+    container_name: xdeploybot-db
+    restart: always
+    environment:
+      POSTGRES_USER: xdeploybot
+      POSTGRES_PASSWORD: xdeploybot123
+      POSTGRES_DB: xdeploybot
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  # Redis Queue
+  redis:
+    image: redis:7-alpine
+    container_name: xdeploybot-redis
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+volumes:
+  postgres_data:
+  redis_data:
