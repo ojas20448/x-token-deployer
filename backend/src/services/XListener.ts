@@ -99,18 +99,11 @@ export class XListener {
             this.isRunning = true;
             console.log(`✅ Polling twitterapi.io for @${this.botUsername} mentions every 12s...`);
 
-            let isOddPoll = true; // Alternate between mentions and DMs
-
-            // Poll every 12 seconds, alternating between mentions and DMs
-            // This ensures we respect the 1 req/5sec limit (12s > 5s * 2)
+            // Poll every 12 seconds for mentions only (DMs disabled to save API quota)
+            // Free tier limit: 1 req/5sec
             this.pollInterval = setInterval(async () => {
                 try {
-                    if (isOddPoll) {
-                        await this.pollTwitterApiIo();
-                    } else {
-                        await this.pollDMs();
-                    }
-                    isOddPoll = !isOddPoll; // Alternate
+                    await this.pollTwitterApiIo();
                 } catch (error) {
                     console.error('❌ Poll error:', error);
                 }
