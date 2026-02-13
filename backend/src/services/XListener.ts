@@ -97,17 +97,24 @@ export class XListener {
             await this.twitterApiIoClient.registerUserForMonitoring(this.botUsername);
 
             this.isRunning = true;
-            console.log(`✅ Polling twitterapi.io for @${this.botUsername} mentions every 30s...`);
+            console.log(`✅ Polling twitterapi.io for @${this.botUsername} mentions every 12s...`);
 
-            // Poll every 30 seconds (free tier limit is 1 req per 5s)
+            let isOddPoll = true; // Alternate between mentions and DMs
+
+            // Poll every 12 seconds, alternating between mentions and DMs
+            // This ensures we respect the 1 req/5sec limit (12s > 5s * 2)
             this.pollInterval = setInterval(async () => {
                 try {
-                    await this.pollTwitterApiIo();
-                    await this.pollDMs();
+                    if (isOddPoll) {
+                        await this.pollTwitterApiIo();
+                    } else {
+                        await this.pollDMs();
+                    }
+                    isOddPoll = !isOddPoll; // Alternate
                 } catch (error) {
                     console.error('❌ Poll error:', error);
                 }
-            }, 30000);
+            }, 12000);
 
             // Initial poll
             await this.pollTwitterApiIo();
