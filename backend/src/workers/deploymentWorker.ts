@@ -4,6 +4,8 @@ import { walletResolver } from '../services/WalletResolver.js';
 import { blockchainDeployer } from '../services/BlockchainDeployer.js';
 import { replyPublisher } from '../services/ReplyPublisher.js';
 import { db } from '../db/client.js';
+import { walletService } from '../services/WalletService.js';
+import { ethers } from 'ethers';
 import type { DeploymentJob } from '../types/index.js';
 import type { Address } from 'viem';
 import { config } from '../config/index.js';
@@ -84,15 +86,32 @@ export async function processDeploymentJob(data: DeploymentJob): Promise<any> {
         await db.updateDeploymentStatus(mention.tweet_id, 'processing');
         await db.recordDeployAttempt(mention.author_id);
 
-        // 5. Execute on-chain deployment
+        // 5. Get deployer's wallet to sign the transaction
+        const deployerUser = await db.getUserByTwitterId(mention.author_id);
+        if (!deployerUser || !deployerUser.private_key_encrypted) {
+            console.error(`❌ Deployer has no custodial wallet`);
+            await db.updateDeploymentStatus(mention.tweet_id, 'failed', {
+                errorMessage: 'Deployer wallet not found. Please DM the bot with "start".'
+            });
+            return { status: 'failed', error: 'No deployer wallet' };
+        }
+
+        const provider = new ethers.JsonRpcProvider(config.RPC_URL);
+        const deployerWallet = walletService.getWallet(deployerUser.private_key_encrypted, provider);
+
+        // 6. Execute on-chain deployment
         console.log(`⛓️ Executing on-chain deployment...`);
 
         const result = await blockchainDeployer.deploy({
             name: command.name,
             symbol: command.ticker,
+            description: command.description || `${command.name} token deployed via X`,
+            image: command.image || 'https://via.placeholder.com/400',
+            twitter: command.twitter,
+            telegram: command.telegram,
+            website: command.website,
             feeRecipient: feeRecipientWallet as Address,
-            deployerTwitterId: mention.author_id,
-        });
+        }, deployerWallet);
 
         if (!result.success) {
             console.error(`❌ Deployment failed: ${result.error}`);
