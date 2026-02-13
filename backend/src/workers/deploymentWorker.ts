@@ -105,11 +105,8 @@ export async function processDeploymentJob(data: DeploymentJob): Promise<any> {
         const result = await blockchainDeployer.deploy({
             name: command.name,
             symbol: command.ticker,
-            description: command.description || `${command.name} token deployed via X`,
-            image: command.image || 'https://via.placeholder.com/400',
-            twitter: command.twitter,
-            telegram: command.telegram,
-            website: command.website,
+            description: `${command.name} token deployed via X`,
+            image: 'https://via.placeholder.com/400',
             feeRecipient: feeRecipientWallet as Address,
         }, deployerWallet);
 
